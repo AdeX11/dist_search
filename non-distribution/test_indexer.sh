@@ -36,11 +36,9 @@ index_end_time=$(date +%s.%N)
 # Convert to milliseconds directly using awk
 index_total_time_ms=$(awk "BEGIN {printf \"%.3f\", ($index_end_time - $index_start_time) * 1000}")
 
-if [ $(echo "$index_total_time_ms == 0" | awk '{print ($1 == 0)}') -eq 1 ]; then
-  index_throughput=0
-else
-  index_throughput=$(awk "BEGIN {printf \"%.3f\", $documents_indexed / $index_total_time_ms}")
-fi
+
+index_throughput=$(awk "BEGIN {printf \"%.3f\", $documents_indexed / $index_total_time_ms}")
+
 
 # Output throughput results
 echo "Indexer Throughput: $index_throughput documents/millisecond"

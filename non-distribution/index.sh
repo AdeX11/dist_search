@@ -10,7 +10,6 @@ cat "$1" |
   c/merge.js d/global-index.txt |
   sort -o d/global-index.txt
 
-
 # cat "$1" |
 #   c/process.sh |  # Tokenize and preprocess the document
 #   c/stem.js |     # Stem terms

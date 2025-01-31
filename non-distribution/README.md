@@ -1,44 +1,35 @@
-# non-distribution
+# M0: Setup & Centralized Computing
 
-This milestone aims (among others) to refresh (and confirm) everyone's
-background on developing systems in the languages and libraries used in this
-course.
+> Add your contact information below and in `package.json`.
 
-By the end of this assignment you will be familiar with the basics of
-JavaScript, shell scripting, stream processing, Docker containers, deployment
-to AWS, and performance characterization—all of which will be useful for the
-rest of the project.
+* name: `<Adebowale Adelekan>`
 
-Your task is to implement a simple search engine that crawls a set of web
-pages, indexes them, and allows users to query the index. All the components
-will run on a single machine.
+* email: `<adebowale_adelekan@brown.edu?>`
 
-## Getting Started
+* cslogin: `<aeadelek>`
 
-To get started with this milestone, run `npm install` inside this folder. To
-execute the (initially unimplemented) crawler run `./engine.sh`. Use
-`./query.js` to query the produced index. To run tests, do `npm run test`.
-Initially, these will fail.
 
-### Overview
+## Summary
 
-The code inside `non-distribution` is organized as follows:
+> Summarize your implementation, including the most challenging aspects; remember to update the `report` section of the `package.json` file with the total number of hours it took you to complete M0 (`hours`), the total number of JavaScript lines you added, including tests (`jsloc`), the total number of shell lines you added, including for deployment and testing (`sloc`).
 
-```
-.
-├── c            # The components of your search engine
-├── d            # Data files like the index and the crawled pages
-├── s            # Utility scripts for linting and submitting your solutions
-├── t            # Tests for your search engine
-├── README.md    # This file
-├── crawl.sh     # The crawler
-├── index.sh     # The indexer
-├── engine.sh    # The orchestrator script that runs the crawler and the indexer
-├── package.json # The npm package file that holds information like JavaScript dependencies
-└── query.js     # The script you can use to query the produced global index
-```
 
-### Submitting
+My implementation consists of seven components addressing T1--8. The most challenging aspect was testing because I kept discovering new bugs and also I had to come up with teh correct answer for waht in some cases was a lo of infoormation.
 
-To submit your solution, run `./scripts/submit.sh` from the root of the stencil. This will create a
-`submission.zip` file which you can upload to the autograder.
+
+## Correctness & Performance Characterization
+
+
+> Describe how you characterized the correctness and performance of your implementation.
+
+
+To characterize correctness, we developed eleven tests that test the following cases: Roughly speaking, the tests cover empty cases, duplicate cases, and ensuring that the frequency count for the terms in the url is updated and so on. 
+
+
+*Performance*: The throughput of various subsystems is described in the `"throughput"` portion of package.json. The characteristics of my development machines are summarized in the `"dev"` portion of package.json. I ran the tests on the small web graph (https://cs.brown.edu/courses/csci1380/sandbox/1). The tests appear to run faster in my dev environment than on the cloud.
+
+
+## Wild Guess
+
+> How many lines of code do you think it will take to build the fully distributed, scalable version of your search engine? Add that number to the `"dloc"` portion of package.json, and justify your answer below.
+I believe that it would be around a thousand lines of code because the main implementation we are now missing involves the communication between nodes and building some sort of redundancy. I belive this can be covered efficiently in rougly 600 more lines of code.
