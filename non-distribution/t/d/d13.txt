@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        a {
+            color: #5D4037;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        a:hover {
+            color: #FF5722;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #3F51B5;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interesting Fact B</h1>
+        <p> Quantum computers represent a significant leap from traditional computing. Unlike classical computers, which use bits as the basic unit of information (which can be either a 0 or a 1), quantum computers use quantum bits, or qubits. What makes qubits extraordinary is their ability to exist in multiple states simultaneously, thanks to the principles of quantum superposition.
+
+        This means a quantum computer can process a vast number of calculations at once, potentially solving problems in minutes that would take classical computers thousands of years. Quantum computing has the potential to revolutionize fields like cryptography, material science, and complex system simulation. However, building and maintaining a stable quantum computer is incredibly challenging, as qubits are highly sensitive to environmental interference. The development of practical and scalable quantum computers is one of the cutting-edge pursuits in modern technology, promising to unlock new capabilities in computing power and efficiency.</p>
+    </div>
+    <div class="footer">
+        <p>© 2023 CS1380. All rights reserved.</p>
+    </div>
+</body>
+</html>

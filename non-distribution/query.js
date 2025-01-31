@@ -24,13 +24,39 @@ The simplest way to use existing components is to call them using execSync.
 For example, `execSync(`echo "${input}" | ./c/process.sh`, {encoding: 'utf-8'});`
 */
 
-
 const fs = require('fs');
 const {execSync} = require('child_process');
-const path = require('path');
-
 
 function query(indexFile, args) {
+  // 1. Read the command-line arguments
+  const queryString = args.join(' '); // Combine arguments into a single query string
+
+  // 2. Normalize, remove stopwords, and stem the query string
+  const processedQuery = execSync(`echo "${queryString}" | ./c/process.sh | ./c/stem.js`, {
+    encoding: 'utf-8',
+  }).trim(); // Process the query string
+
+  if (!processedQuery) {
+    console.log('No valid search terms after processing.');
+    return;
+  }
+
+  // 3. Search the global index using the processed query string
+  const globalIndex = fs.readFileSync(indexFile, 'utf8'); // Read the global index file
+  const lines = globalIndex.split('\n'); // Split into lines
+
+  // 4. Print the matching lines from the global index file
+  const searchTerms = processedQuery.split(' '); // Split processed query into terms
+  const matchingLines = lines.filter((line) => {
+    const [term] = line.split(' | '); // Extract the term part of the line
+    return searchTerms.some((searchTerm) => term.includes(searchTerm)); // Check if any search term matches
+  });
+
+  if (matchingLines.length > 0) {
+    console.log(matchingLines.join('\n')); // Print matching lines
+  } else {
+    console.log('No matches found.');
+  }
 }
 
 const args = process.argv.slice(2); // Get command-line arguments

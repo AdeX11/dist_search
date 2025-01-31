@@ -1,0 +1,11 @@
+simple
+links
+check
+stuff
+level
+check
+stuff
+level
+rights
+awscloudserver
+bat

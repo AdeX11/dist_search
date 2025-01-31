@@ -13,7 +13,10 @@ const rl = readline.createInterface({
   output: process.stdout,
   terminal: false,
 });
-
+const stemmer = natural.PorterStemmer;
 rl.on('line', function(line) {
   // Print the Porter stem from `natural` for each element of the stream.
+  const words = line.split(' ');
+  const stemmedWords = words.map((word) => stemmer.stem(word));
+  console.log(stemmedWords.join('\n'));
 });

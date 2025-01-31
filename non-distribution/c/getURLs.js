@@ -9,30 +9,44 @@ const readline = require('readline');
 const {JSDOM} = require('jsdom');
 const {URL} = require('url');
 
-// 1. Read the base URL from the command-line argument using `process.argv`.
-let baseURL = '';
+// Read the base URL from the command-line argument
+if (process.argv.length < 3) {
+  console.error('Usage: ./getURLs.js <base_url>');
+  process.exit(1);
+}
+
+let baseURL = process.argv[2];
 
 if (baseURL.endsWith('index.html')) {
-  baseURL = baseURL.slice(0, baseURL.length - 'index.html'.length);
-} else {
+  baseURL = baseURL.slice(0, -'index.html'.length);
+} else if (!baseURL.endsWith('/')) {
   baseURL += '/';
 }
 
 const rl = readline.createInterface({
   input: process.stdin,
+  output: process.stdout,
+  terminal: false,
 });
 
+let htmlContent = '';
+
+// Read HTML input from stdin
 rl.on('line', (line) => {
-  // 2. Read HTML input from standard input (stdin) line by line using the `readline` module.
+  htmlContent += line + '\n';
 });
 
 rl.on('close', () => {
-  // 3. Parse HTML using jsdom
+  // Parse HTML using jsdom
+  const dom = new JSDOM(htmlContent);
+  const document = dom.window.document;
 
-  // 4. Find all URLs:
-  //  - select all anchor (`<a>`) elements) with an `href` attribute using `querySelectorAll`.
-  //  - extract the value of the `href` attribute for each anchor element.
-    // 5. Print each absolute URL to the console, one per line.
+  // Find all anchor elements (`<a>`) with an `href` attribute
+  const links = Array.from(document.querySelectorAll('a[href]'))
+      .map((a) => a.getAttribute('href'))
+      .map((href) => new URL(href, baseURL).href) // Convert to absolute URL
+      .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
+
+  // Print each absolute URL
+  links.forEach((url) => console.log(url));
 });
-
-

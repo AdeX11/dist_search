@@ -48,13 +48,23 @@ const rl = readline.createInterface({
 });
 
 // 1. Read the incoming local index data from standard input (stdin) line by line.
-let localIndex = '';
+let localIndex = ''; // Initialize localIndex as an empty string
 rl.on('line', (line) => {
+  localIndex += line + '\n'; // Append each line to localIndex
 });
 
 rl.on('close', () => {
   // 2. Read the global index name/location, using process.argv
-  // and call printMerged as a callback
+  const globalIndexFile = process.argv[2];
+  if (!globalIndexFile) {
+    console.error('Error: Global index file not provided.');
+    process.exit(1);
+  }
+
+  // Read the global index file and call printMerged as a callback
+  fs.readFile(globalIndexFile, 'utf8', (err, data) => {
+    printMerged(err, data);
+  });
 });
 
 const printMerged = (err, data) => {
@@ -64,24 +74,45 @@ const printMerged = (err, data) => {
   }
 
   // Split the data into an array of lines
-  const localIndexLines = localIndex.split('\n');
-  const globalIndexLines = data.split('\n');
-
-  localIndexLines.pop();
-  globalIndexLines.pop();
+  const localIndexLines = localIndex.trim().split('\n'); // Remove trailing newline and split
+  const globalIndexLines = data.trim().split('\n'); // Remove trailing newline and split
 
   const local = {};
   const global = {};
 
   // 3. For each line in `localIndexLines`, parse them and add them to the `local` object where keys are terms and values contain `url` and `freq`.
   for (const line of localIndexLines) {
-    local[term] = {url, freq};
+    const [term, freq, url] = line.split(' | ');
+    if (!local[term]) {
+      local[term] = [];
+    }
+
+    // Check if the URL already exists for this term
+    const existingEntry = local[term].find((entry) => entry.url === url);
+    if (!existingEntry) {
+      local[term].push({url, freq: parseInt(freq, 10)});
+    }
   }
 
   // 4. For each line in `globalIndexLines`, parse them and add them to the `global` object where keys are terms and values are arrays of `url` and `freq` objects.
   // Use the .trim() method to remove leading and trailing whitespace from a string.
   for (const line of globalIndexLines) {
-    global[term] = urlfs; // Array of {url, freq} objects
+    const [term, rest = ''] = line.split(' | ');
+    if (rest =='') {
+      continue;
+    }
+
+
+    // Split the rest into an array of URL-frequency pairs if rest exists
+    const urlFreqPairs = rest.trim() ? rest.split(' ') : [];
+
+    global[term] = [];
+    for (let i = 0; i < urlFreqPairs.length; i += 2) {
+      global[term].push({
+        url: urlFreqPairs[i],
+        freq: parseInt(urlFreqPairs[i + 1], 10),
+      });
+    }
   }
 
   // 5. Merge the local index into the global index:
@@ -90,6 +121,42 @@ const printMerged = (err, data) => {
   //     - Sort the array by `freq` in descending order.
   // - If the term does not exist in the global index:
   //     - Add it as a new entry with the local index's data.
+  for (const term of Object.keys(local)) {
+    if (global[term]) {
+      // If the term exists in the global index, merge and update counts
+      const urlMap = new Map();
+
+      // Add global entries to the map
+      for (const entry of global[term]) {
+        urlMap.set(entry.url, (urlMap.get(entry.url) || 0) + entry.freq);
+      }
+
+      // Add local entries to the map
+      for (const entry of local[term]) {
+        urlMap.set(entry.url, (urlMap.get(entry.url) || 0) + entry.freq);
+      }
+
+      // Convert the map back to an array of objects
+      global[term] = Array.from(urlMap.entries()).map(([url, freq]) => ({
+        url,
+        freq,
+      }));
+    } else {
+      // If the term does not exist, add it as a new entry
+      global[term] = local[term];
+    }
+
+    // Sort the entries by frequency in descending order
+    global[term].sort(compare);
+  }
+
+
   // 6. Print the merged index to the console in the same format as the global index file:
   //    - Each line contains a term, followed by a pipe (`|`), followed by space-separated pairs of `url` and `freq`.
+  for (const term in global) {
+    const urlFreqPairs = global[term]
+        .map((entry) => `${entry.url} ${entry.freq}`)
+        .join(' ');
+    console.log(`${term} | ${urlFreqPairs}`);
+  }
 };
