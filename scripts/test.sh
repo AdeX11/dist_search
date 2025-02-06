@@ -61,7 +61,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Construct the JEST command
-JEST_COMMAND="jest --maxWorkers=1"
+JEST_COMMAND="jest --maxWorkers=16"
 JEST_COMMAND_FLAGS=""
 
 # Add test matching logic
