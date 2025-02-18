@@ -9,6 +9,8 @@ routes   A mapping from names to functions          get, put
 
 */
 
+/* rpc Service */
+
 /* Status Service */
 
 const status = require('./status');

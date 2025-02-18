@@ -1,72 +1,83 @@
 const http = require('http');
 const url = require('url');
+const { serialize, deserialize } = require('../util/serialization');
 const log = require('../util/log');
-
-
-/*
-    The start function will be called to start your node.
-    It will take a callback as an argument.
-    After your node has booted, you should call the callback.
-*/
-
+const routes = require('./routes');
+const distribution = require('@brown-ds/distribution');
+const { createRPC, toAsync, toRemote } = require('../util/wire');
 
 const start = function(callback) {
   const server = http.createServer((req, res) => {
-    /* Your server will be listening for PUT requests. */
+    if (req.method !== 'PUT') {
+      res.writeHead(405, { 'Content-Type': 'text/plain' });
+      return res.end('Method Not Allowed');
+    }
 
-    // Write some code...
+    const { pathname } = url.parse(req.url, true);
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts.length < 3) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'Invalid URL format' }));
+    }
+    console.log("parts:", parts);
+    const [gid, service, method] = parts;
 
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    }).on('end', () => {
+      try {
+        const data = deserialize(body);
 
-    /*
-      The path of the http request will determine the service to be used.
-      The url will have the form: http://node_ip:node_port/service/method
-    */
-
-
-    // Write some code...
-
-
-    /*
-
-      A common pattern in handling HTTP requests in Node.js is to have a
-      subroutine that collects all the data chunks belonging to the same
-      request. These chunks are aggregated into a body variable.
-
-      When the req.on('end') event is emitted, it signifies that all data from
-      the request has been received. Typically, this data is in the form of a
-      string. To work with this data in a structured format, it is often parsed
-      into a JSON object using JSON.parse(body), provided the data is in JSON
-      format.
-
-      Our nodes expect data in JSON format.
-  */
-
-    // Write some code...
-
-
-      /* Here, you can handle the service requests. */
-
-      // Write some code...
-
-      const serviceName = service;
-
-
-
-        // Write some code...
-
+        // Check if this is an RPC call by looking in global.toLocal
+        if (global.toLocal && global.toLocal[method]) {
+          log(`Executing RPC call for method: ${method}`);
+          global.toLocal[method](...data, (err, result) => {
+            // Check if headers have already been sent
+            if (res.headersSent) return;
+            if (err) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: err.message }));
+            } else {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(result);
+            }
+          });
+        } else {
+          // Standard route handling
+          routes.get(service, (err, serviceObject) => {
+            // Check if headers have already been sent
+            if (res.headersSent) return;
+            if (err) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              return res.end(JSON.stringify({ error: err.message }));
+            }
+            if (serviceObject && serviceObject[method]) {
+              serviceObject[method](...data, (err, result) => {
+                // Check if headers have already been sent
+                if (res.headersSent) return;
+                if (err) {
+                  res.writeHead(500, { 'Content-Type': 'application/json' });
+                  res.end(JSON.stringify({ error: err.message }));
+                } else {
+                  res.writeHead(200, { 'Content-Type': 'application/json' });
+                  res.end(result);
+                }
+              });
+            } else {
+              res.writeHead(404, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: `Service or method not found: ${service}/${method}` }));
+            }
+          });
+        }
+      } catch (deserializeError) {
+        // Check if headers have already been sent
+        if (res.headersSent) return;
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: deserializeError.message }));
+      }
+    });
   });
-
-
-  // Write some code...
-
-  /*
-    Your server will be listening on the port and ip specified in the config
-    You'll be calling the `callback` callback when your server has successfully
-    started.
-
-    At some point, we'll be adding the ability to stop a node
-    remotely through the service interface.
-  */
 
   server.listen(global.nodeConfig.port, global.nodeConfig.ip, () => {
     log(`Server running at http://${global.nodeConfig.ip}:${global.nodeConfig.port}/`);
@@ -75,7 +86,6 @@ const start = function(callback) {
   });
 
   server.on('error', (error) => {
-    // server.close();
     log(`Server error: ${error}`);
     throw error;
   });

@@ -24,18 +24,23 @@
     "jest": "^29.7.0"
   },
   "report": {
-    "hours": 15,
+    "hours": 20,
     "loc": 414,
-    "jsloc" : 312,
-    "sloc" : 102,
+    "jsloc" : 414,
+    "sloc" : 0,
     "dev": {
       "cpu-no": 8,
       "mem-gb": 8,
       "ssd-gb": 512
     },
     "throughput": {
-      "dev": ["crawler:1.00 queries/second", "indexer:0.001 documents/millisecond", "query:1.73 queries/second"],
-      "aws": ["crawler:0.50 queries/second", "indexer:0.001 documents/millisecond", "query:1.38 queries/second"],
+      "dev": ["Throughput for comm: 15.546985711542781 requests/second"],
+      "aws": ["Throughput for comm: 11.593693693628363 requests/second"],
+      "gs": []
+    },
+    "latency": {
+      "dev": ["Average Latency for comm: 64.32115 ms"],
+      "aws": ["Average Latency for comm: 75.48468 ms"],
       "gs": []
     },
     "dloc": 1000

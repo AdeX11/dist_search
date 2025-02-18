@@ -56,7 +56,6 @@ test('(5 pts) (scenario) dynamic group membership', (done) => {
       });
     });
   });
-});
 
 
 test('(5 pts) (scenario) group relativity', (done) => {

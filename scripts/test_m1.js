@@ -75,3 +75,9 @@ const avgDeserializeLatency = totalDeserializeTime / count;
 console.log(`\nOverall Average Latency:`);
 console.log(`  Average Serialization Time: ${avgSerializeLatency.toFixed(3)}ms`);
 console.log(`  Average Deserialization Time: ${avgDeserializeLatency.toFixed(3)}ms`);
+
+const testData = { foo: 'bar', baz: undefined, arr: [1, undefined, 3] };
+const serialized = distribution.util.serialize(testData);
+console.log('Serialized:', serialized);
+const deserialized = distribution.util.deserialize(serialized);
+console.log('Deserialized:', deserialized);
