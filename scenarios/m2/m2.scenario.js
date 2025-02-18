@@ -68,8 +68,7 @@ test('(5 pts) (scenario) use rpc', (done) => {
 
   const node = {ip: '127.0.0.1', port: 9009};
 
-  // Create an RPC stub for addOne
-  const addOneRPC = distribution.util.wire.createRPC(distribution.util.wire.toAsync(addOne), node);
+  let addOneRPC = '?';
 
   const rpcService = {
     addOne: addOneRPC,

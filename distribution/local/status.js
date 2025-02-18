@@ -1,4 +1,3 @@
-const id = require('../util/id');
 const log = require('../util/log');
 const path = require('path');
 const nodeServer = require('./node');
