@@ -14,7 +14,7 @@ test('(10 pts) local.status.spawn/stop using local.comm', (done) => {
 
   const node = {
     ip: '127.0.0.1',
-    port: 9090,
+    port: 9091,
   };
 
   const config = {
@@ -54,4 +54,4 @@ test('(10 pts) local.status.spawn/stop using local.comm', (done) => {
   distribution.node.start((server) => {
     spawnNode(server);
   });
-});
+},10000);

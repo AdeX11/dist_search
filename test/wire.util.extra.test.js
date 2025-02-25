@@ -46,6 +46,7 @@ test('(25 pts) rpc w/ arguments', (done) => {
   let localVar = 5;
 
   function addSth(n) {
+    console.log("aaaaaa: ", typeof(n[0]));
     return localVar += n;
   }
 

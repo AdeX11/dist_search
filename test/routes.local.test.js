@@ -1,4 +1,5 @@
-const config = {ip: '127.0.0.1', port: 2345};
+const config = {ip: '127.0.0.1', port: 1234};
+const { log } = require('console');
 const distribution = require('../config.js')(config);
 const local = distribution.local;
 const routes = distribution.local.routes;
@@ -12,6 +13,7 @@ test('(4 pts) local.routes.get(status)', (done) => {
       expect(v).toBe(status);
       done();
     } catch (error) {
+      log(error.message)
       done(error);
     }
   });
